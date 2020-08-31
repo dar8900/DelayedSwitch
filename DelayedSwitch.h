@@ -6,6 +6,8 @@
 #include <Chrono.h>
 #include <EEPROM.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #define ON      true
 #define OFF     false
@@ -51,9 +53,20 @@ class BUTTON_CTRL
 
 class OLED_CTRL
 {
+    private:
+        enum
+        {
+            TIMER = 0,
+            STATUS,
+            CURRENT,
+            CURRENT_AVG,
+            MAX_ROLL
+        };
+        SSD1306_Mini Oled;
+        uint8_t infoRoll;
     public:
         void setup();
-        void showAllInfo(uint32_t Timer, bool Status, float Current);
+        void showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg);
 };
 
 class CURRENT_SENSOR_CTRL
@@ -62,7 +75,7 @@ class CURRENT_SENSOR_CTRL
         int analogReference = 0;
     public:
         void setup();
-        void calcCurrent(float &Current);
+        void calcCurrent(float &Current, float &CurrentAvg);
 };
 
 class DELAYED_SWITCH
@@ -71,6 +84,7 @@ class DELAYED_SWITCH
         uint32_t switchTimer;
         bool status;
         float current;
+        float currentAvg;
         BUTTON_CTRL Button;
         RELE_CTRL Switch;
         TIMER_CTRL SwitchTimer;
