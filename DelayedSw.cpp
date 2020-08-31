@@ -1,5 +1,8 @@
 #include "DelayedSwitch.h"
 
+#define N_SAMPLE        50
+#define MVOLTS_TO_AMPS  100.0
+
 Chrono TimerSwitch(Chrono::SECONDS);
 
 void RELE_CTRL::setup()
@@ -91,12 +94,27 @@ void BUTTON_CTRL::checkButton(uint32_t &Timer, bool &Status)
 }
 
 
-void CURRENT_SENSOR::setup()
+void CURRENT_SENSOR_CTRL::setup()
 {
-
+    uint32_t SensRead = 0;
+    for(int i = 0; i < N_SAMPLE; i++)
+    {
+        SensRead += analogRead(CURRENT_SENSOR);
+    }
+    analogReference = (SensRead / N_SAMPLE);
 }
 
-void CURRENT_SENSOR::calcCurrent(float &Current)
+void CURRENT_SENSOR_CTRL::calcCurrent(float &Current)
 {
-    
+    float Millivolt = 0.0, AnalogCurrRms = 0.0;
+    for(int i = 0;i < N_SAMPLE; i++)
+    {
+        int Sample = analogRead(CURRENT_SENSOR);
+        Sample -= analogReference;
+        AnalogCurrRms += (float)(Sample * Sample);
+    }
+    AnalogCurrRms /= N_SAMPLE;
+    AnalogCurrRms = sqrt(AnalogCurrRms);
+    Millivolt = (AnalogCurrRms * 5.0) / 1.024;    
+    Current = roundf((Millivolt / MVOLTS_TO_AMPS) * 100.0);
 }

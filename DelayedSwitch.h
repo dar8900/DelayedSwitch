@@ -56,8 +56,10 @@ class OLED_CTRL
         void showAllInfo(uint32_t Timer, bool Status, float Current);
 };
 
-class CURRENT_SENSOR
+class CURRENT_SENSOR_CTRL
 {
+    private:
+        int analogReference = 0;
     public:
         void setup();
         void calcCurrent(float &Current);
@@ -69,6 +71,11 @@ class DELAYED_SWITCH
         uint32_t switchTimer;
         bool status;
         float current;
+        BUTTON_CTRL Button;
+        RELE_CTRL Switch;
+        TIMER_CTRL SwitchTimer;
+        CURRENT_SENSOR_CTRL CurrentSensor;
+        OLED_CTRL OledDisplay;
         
     public:
         void setup();
