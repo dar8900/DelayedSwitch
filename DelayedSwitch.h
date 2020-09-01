@@ -73,6 +73,8 @@ class CURRENT_SENSOR_CTRL
 {
     private:
         int analogReference = 0;
+        float currentAvgAcc;
+        uint32_t avgCnt = 0;
     public:
         void setup();
         void calcCurrent(float &Current, float &CurrentAvg);

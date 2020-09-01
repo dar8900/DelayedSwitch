@@ -3,7 +3,7 @@
 #define N_SAMPLE        50
 #define MVOLTS_TO_AMPS  100.0
 
-Chrono TimerSwitch(Chrono::SECONDS), ShowInfoTimer(Chrono::SECONDS);
+Chrono TimerSwitch(Chrono::SECONDS), ShowInfoTimer(Chrono::SECONDS), CurrentAvgTimer(Chrono::SECONDS);
 
 void RELE_CTRL::setup()
 {
@@ -118,6 +118,14 @@ void CURRENT_SENSOR_CTRL::calcCurrent(float &Current, float &CurrentAvg)
     AnalogCurrRms = sqrt(AnalogCurrRms);
     Millivolt = (AnalogCurrRms * 5.0) / 1.024;    
     Current = roundf((Millivolt / MVOLTS_TO_AMPS) * 100.0);
+    currentAvgAcc += Current;
+    avgCnt++;
+    if(CurrentAvgTimer.hasPassed(30, true))
+    {
+        CurrentAvg = (currentAvgAcc / (float)avgCnt);
+        currentAvgAcc = 0.0;
+        avgCnt = 0;
+    }
 }
 
 
@@ -132,8 +140,8 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
 {
     // 4 righe con: stato del timer, stato presa, corrente instantanea e corrente media
     uint8_t Col = 0;
+    bool ChangeDisplay = false;
     char OledText[50];
-    // String OledText = "";
     if(ShowInfoTimer.hasPassed(2, true))
     {
         if(infoRoll < MAX_ROLL)
@@ -141,38 +149,31 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
         else
             infoRoll = TIMER;
         Oled.clear();
+        ChangeDisplay = true;
     }
-    if(infoRoll == TIMER)
+    if(ChangeDisplay)
     {
-        snprintf(OledText, 50, "Stato timer: %02dh %02dm", Timer / 60, Timer % 60);
+        if(infoRoll == TIMER)
+        {
+            snprintf(OledText, 50, "Stato timer: %02dh %02dm", Timer / 60, Timer % 60);
+        }
+        else if(infoRoll == STATUS)
+        {
+            snprintf(OledText, 50, "Stato switch: %s", Status == ON ? "ACCESO" : "SPENTO");
+        }
+        else if(infoRoll == CURRENT)
+        {
+        snprintf(OledText, 50, "Corrente letta: %.2fA", Current); 
+        }
+        else if(infoRoll == CURRENT_AVG)
+        {
+            snprintf(OledText, 50, "Corrente media: %.2fA", CurrentAvg);
+        }
+
+        Col = (128 - strlen(OledText)) / 2;
+        Oled.cursorTo(35, Col);
+        Oled.printString(OledText);
     }
-    // else if(infoRoll == STATUS)
-    // {
-    //     OledText = "Stato switch: ";
-    //     if(Status == ON)
-    //     {
-    //         OledText += "ACCESO";
-    //     }
-    //     else
-    //     {
-    //         OledText += "SPENTO";
-    //     }
-    // }
-    // else if(infoRoll == CURRENT)
-    // {
-    //     OledText = "Corrente letta: ";
-    //     // OledText += String(Current, 2);
-    //     OledText += "A";
-    // }
-    // else if(infoRoll == CURRENT_AVG)
-    // {
-    //     OledText = "Corrente media: ";
-    //     // OledText += String(CurrentAvg, 2);
-    //     OledText += "A";        
-    // }
-    Col = (128 - strlen(OledText)) / 2;
-    Oled.cursorTo(35, Col);
-    Oled.printString(OledText);
 }
 
 
