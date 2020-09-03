@@ -60,7 +60,7 @@ void BUTTON_CTRL::checkButton(uint32_t &Timer, bool &Status)
 {
     uint32_t Elapsed = 0;
     bool ButtonStatus = false;
-    buttonPressed = NO_PRESS;
+    longPress = false;
     ButtonStatus = (bool)digitalRead(BUTTON_PIN);
     if(ButtonStatus)
     {
@@ -70,27 +70,31 @@ void BUTTON_CTRL::checkButton(uint32_t &Timer, bool &Status)
             ButtonStatus = (bool)digitalRead(BUTTON_PIN);
             if(millis() - Elapsed > 1000)
             {
-                buttonPressed = LONG_PRESSED;
+                longPress = true;
                 break;
-            }
-            else
-            {
-                buttonPressed = PRESSED;
-            }
-            
+            }            
         }
-        if(buttonPressed == LONG_PRESSED && Timer != 0)
+        delay(25);
+        if(longPress)
         {
             Timer = 0;
             Status = OFF;
+            wasLongPressed = true;
         }
-        else if(buttonPressed == PRESSED)
+        else
         {
-            if(Timer < 5999)
-                Timer++;
-            Status = ON;
+            if(!wasLongPressed)
+            {
+                if(Timer < 5999)
+                    Timer++;
+                Status = ON;
+            }
+            else
+            {
+                wasLongPressed = false;
+            }
         }
-        delay(25);
+        
     }
 }
 
@@ -140,40 +144,53 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
 {
     // 4 righe con: stato del timer, stato presa, corrente instantanea e corrente media
     uint8_t Col = 0;
-    bool ChangeDisplay = false;
-    char OledText[50];
-    if(ShowInfoTimer.hasPassed(2, true))
+    //bool ChangeDisplay = !enablePageRool;
+    char OledText1[20], OledText2[20];
+    if(enablePageRool)
     {
-        if(infoRoll < MAX_ROLL)
-            infoRoll++;
-        else
-            infoRoll = TIMER;
-        Oled.clear();
-        ChangeDisplay = true;
+        if(ShowInfoTimer.hasPassed(5, true))
+        {
+            if(infoRoll < MAX_ROLL - 1)
+                infoRoll++;
+            else
+                infoRoll = TIMER;
+            Oled.clear();
+            //ChangeDisplay = true;
+        }
     }
-    if(ChangeDisplay)
-    {
+    // if(ChangeDisplay)
+    // {
         if(infoRoll == TIMER)
         {
-            snprintf(OledText, 50, "Stato timer: %02dh %02dm", Timer / 60, Timer % 60);
+            snprintf(OledText1, 20, "Stato timer:");
+            //snprintf(OledText2, 20, "%d", Timer);
+            snprintf(OledText2, 20, "%dm", Timer);
         }
         else if(infoRoll == STATUS)
         {
-            snprintf(OledText, 50, "Stato switch: %s", Status == ON ? "ACCESO" : "SPENTO");
+            snprintf(OledText1, 20, "Stato switch:");
+            snprintf(OledText2, 20, "%s", Status == ON ? "ACCESO" : "SPENTO");
         }
         else if(infoRoll == CURRENT)
         {
-        snprintf(OledText, 50, "Corrente letta: %.2fA", Current); 
+            int16_t CurrentDec = (int16_t)(Current * 1000.0);
+            snprintf(OledText1, 20, "Corrente letta:"); 
+            snprintf(OledText2, 20, "%dmA", CurrentDec); 
         }
         else if(infoRoll == CURRENT_AVG)
         {
-            snprintf(OledText, 50, "Corrente media: %.2fA", CurrentAvg);
+            int16_t CurrentDec = (int16_t)(CurrentAvg * 1000.0);
+            snprintf(OledText1, 20, "Corrente media:");
+            snprintf(OledText2, 20, "%dmA", CurrentDec);
         }
 
-        Col = (128 - strlen(OledText)) / 2;
-        Oled.cursorTo(35, Col);
-        Oled.printString(OledText);
-    }
+        // Col = (128 - strlen(OledText1)) / 2;
+        Oled.cursorTo(strlen(OledText1), 3);
+        Oled.printString(OledText1);
+        // Col = (128 - strlen(OledText2)) / 2;
+        Oled.cursorTo(55, 5);
+        Oled.printString(OledText2);
+    // }
 }
 
 

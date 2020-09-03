@@ -43,8 +43,8 @@ class BUTTON_CTRL
             LONG_PRESSED,
             NO_PRESS
         };
-        uint8_t buttonPressed = NO_PRESS;
-        uint8_t oldButtonStatus = NO_PRESS;
+        //uint8_t buttonPressed = NO_PRESS;
+        bool longPress = false, wasLongPressed = false;
 
     public:
         void setup();
@@ -63,7 +63,8 @@ class OLED_CTRL
             MAX_ROLL
         };
         SSD1306_Mini Oled;
-        uint8_t infoRoll;
+        uint8_t infoRoll = STATUS;
+        bool enablePageRool = true;
     public:
         void setup();
         void showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg);
