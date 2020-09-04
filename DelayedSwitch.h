@@ -62,7 +62,8 @@ class OLED_CTRL
             MAX_ROLL
         };
         SSD1306_Mini Oled;
-        uint8_t infoRoll = STATUS;
+        uint8_t infoRoll = TIMER;
+        bool oldTimerSetting;
         // bool enablePageRool = true;
     public:
         void setup();     

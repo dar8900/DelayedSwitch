@@ -122,7 +122,7 @@ void CURRENT_SENSOR_CTRL::calcCurrent(float &Current, float &CurrentAvg)
     AnalogCurrRms /= N_SAMPLE;
     AnalogCurrRms = sqrt(AnalogCurrRms);
     Millivolt = (AnalogCurrRms * 5.0) / 1.024;    
-    Current = roundf((Millivolt / MVOLTS_TO_AMPS) * 100.0) / 100.0;
+    Current = (roundf((Millivolt / MVOLTS_TO_AMPS) * 100.0) / 100.0);
     currentAvgAcc += Current;
     avgCnt++;
     if(CurrentAvgTimer.hasPassed(30, true))
@@ -144,6 +144,13 @@ void OLED_CTRL::setup()
 void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg, bool &TimerSetting)
 {
     char OledText1[20], OledText2[20];
+    char hour[4], minute[4];
+    bool IsTimer = false;
+    if(oldTimerSetting != TimerSetting)
+    {
+        oldTimerSetting = TimerSetting;
+        Oled.clear();
+    }
     if(!TimerSetting)
     {
         if(ShowInfoTimer.hasPassed(5, true))
@@ -158,21 +165,19 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
     else
     {
         infoRoll = TIMER;
-        if(ShowInfoTimer.hasPassed(20, true))
+        if(ShowInfoTimer.hasPassed(15, true))
         {
             TimerSetting = false;
+            infoRoll = STATUS;
         }
     }
     
     if(infoRoll == TIMER)
     {
-        char hour[5], minute[5];
-        snprintf(hour, 5, "%02dh", Timer / 60);
-        snprintf(minute, 5, "%02dm", Timer % 60);
-        strcat(OledText2, hour);
-        strcat(OledText2, minute);
+        snprintf(hour, 4, "%02dh", Timer / 60);
+        snprintf(minute, 4, "%02dm", Timer % 60);
         snprintf(OledText1, 20, "Stato timer:");
-        snprintf(OledText2, 20, "%s", OledText2);
+        IsTimer = true;
     }
     else if(infoRoll == STATUS)
     {
@@ -193,8 +198,19 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
     }
     Oled.cursorTo(strlen(OledText1), 3);
     Oled.printString(OledText1);
-    Oled.cursorTo(55, 5);
-    Oled.printString(OledText2);
+    if(!IsTimer)
+    {
+        Oled.cursorTo(55, 5);
+        Oled.printString(OledText2);
+    }
+    else
+    {
+        Oled.cursorTo(55, 5);
+        Oled.printString(hour);
+        Oled.cursorTo(75, 5);
+        Oled.printString(minute);
+    }
+    
 }
 
 
