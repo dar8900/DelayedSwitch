@@ -2,12 +2,12 @@
 #define DELAYED_SWIITCH_H
 
 #include <Arduino.h>
-#include <SSD1306_minimal.h>
+#include "SSD1306_minimal.h"
 #include <Chrono.h>
-#include <EEPROM.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+
 
 #define ON      true
 #define OFF     false
@@ -43,12 +43,11 @@ class BUTTON_CTRL
             LONG_PRESSED,
             NO_PRESS
         };
-        //uint8_t buttonPressed = NO_PRESS;
         bool longPress = false, wasLongPressed = false;
 
     public:
         void setup();
-        void checkButton(uint32_t &Timer, bool &Status);
+        void checkButton(uint32_t &Timer, bool &Status, bool &TimerSetting);
 };
 
 class OLED_CTRL
@@ -64,10 +63,10 @@ class OLED_CTRL
         };
         SSD1306_Mini Oled;
         uint8_t infoRoll = STATUS;
-        bool enablePageRool = true;
+        // bool enablePageRool = true;
     public:
-        void setup();
-        void showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg);
+        void setup();     
+        void showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg, bool &TimerSetting);
 };
 
 class CURRENT_SENSOR_CTRL
@@ -86,6 +85,7 @@ class DELAYED_SWITCH
     private:
         uint32_t switchTimer;
         bool status;
+        bool timerSetting;
         float current;
         float currentAvg;
         BUTTON_CTRL Button;
