@@ -30,7 +30,6 @@ class RELE_CTRL
 class TIMER_CTRL
 {
     public:
-        void setup(uint32_t &Timer);
         void updateTimer(uint32_t &Timer, bool &Status);
 };
 
@@ -76,19 +75,20 @@ class CURRENT_SENSOR_CTRL
         int analogReference = 0;
         float currentAvgAcc;
         uint32_t avgCnt = 0;
+        void calcAnalogRef();
     public:
         void setup();
-        void calcCurrent(float &Current, float &CurrentAvg);
+        void calcCurrent(float &Current, float &CurrentAvg, bool SwitchStatus);
 };
 
 class DELAYED_SWITCH
 {
     private:
-        uint32_t switchTimer;
+        uint32_t switchTimer = 0;
         bool status;
         bool timerSetting;
-        float current;
-        float currentAvg;
+        float current = 0.0;
+        float currentAvg = 0.0;
         BUTTON_CTRL Button;
         RELE_CTRL Switch;
         TIMER_CTRL SwitchTimer;
