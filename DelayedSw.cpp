@@ -125,6 +125,7 @@ void CURRENT_SENSOR_CTRL::calcCurrent(float &Current, float &CurrentAvg, bool Sw
         AnalogCurrRms = sqrt(AnalogCurrRms);
         Millivolt = (AnalogCurrRms * 5.0) / 1.024;    
         Current = (roundf((Millivolt / MVOLTS_TO_AMPS) * 100.0) / 100.0);
+        Current -= 0.07;
         currentAvgAcc += Current;
         avgCnt++;
         if(CurrentAvgTimer.hasPassed(30, true))
@@ -149,6 +150,12 @@ void OLED_CTRL::setup()
     Oled.init(0x3c);
     Oled.clear();
     Oled.startScreen();
+    Oled.cursorTo(20, 4);
+    Oled.printString("Delayed Switch");
+    Oled.cursorTo(40, 5);
+    Oled.printString("starting...");
+    delay(1500);
+    Oled.clear();
 }
 
 void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float CurrentAvg, bool &TimerSetting)
@@ -230,9 +237,9 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
     }
     else
     {
-        Oled.cursorTo(55, 5);
+        Oled.cursorTo(50, 5);
         Oled.printString(hour);
-        Oled.cursorTo(75, 5);
+        Oled.cursorTo(70, 5);
         Oled.printString(minute);
     }
     
