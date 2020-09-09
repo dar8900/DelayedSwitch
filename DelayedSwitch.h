@@ -43,7 +43,9 @@ class BUTTON_CTRL
             NO_PRESS
         };
         bool longPress = false, wasLongPressed = false;
-
+        uint32_t lastPressedTime = 0;
+        uint8_t lastPressedRepete = 0;
+        const uint8_t MAX_PRESSED_REPETE = 3;
     public:
         void setup();
         void checkButton(uint32_t &Timer, bool &Status, bool &TimerSetting);
@@ -56,7 +58,7 @@ class OLED_CTRL
         {
             TIMER = 0,
             STATUS,
-            CURRENT,
+            // CURRENT,
             CURRENT_AVG,
             MAX_ROLL
         };

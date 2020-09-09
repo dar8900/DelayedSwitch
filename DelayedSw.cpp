@@ -82,8 +82,34 @@ void BUTTON_CTRL::checkButton(uint32_t &Timer, bool &Status, bool &TimerSetting)
         {
             if(!wasLongPressed)
             {
+                if(lastPressedRepete < MAX_PRESSED_REPETE - 1)
+                {
+                    if(lastPressedRepete == 0)
+                    {
+                        lastPressedTime = millis();
+                    }
+                    lastPressedRepete++;
+                }
+                else
+                {
+                    lastPressedTime = millis() - lastPressedTime;
+                    lastPressedRepete = 0;
+                    if(lastPressedTime <= (500 * MAX_PRESSED_REPETE))
+                    {
+                        if(Timer + 10 < 5999)
+                        {
+                            Timer += 10;
+                        }
+                        else
+                        {
+                            Timer = 5999;
+                        }
+                    }
+                }
                 if(Timer < 5999)
+                {
                     Timer++;
+                }
                 Status = ON;
             }
             else
@@ -128,7 +154,7 @@ void CURRENT_SENSOR_CTRL::calcCurrent(float &Current, float &CurrentAvg, bool Sw
         Current -= 0.07;
         currentAvgAcc += Current;
         avgCnt++;
-        if(CurrentAvgTimer.hasPassed(30, true))
+        if(CurrentAvgTimer.hasPassed(5, true))
         {
             CurrentAvg = (currentAvgAcc / (float)avgCnt);
             currentAvgAcc = 0.0;
@@ -216,12 +242,12 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
         snprintf(OledText1, 20, "Stato switch:");
         snprintf(OledText2, 20, "%s", Status == ON ? "ACCESO" : "SPENTO");
     }
-    else if(infoRoll == CURRENT)
-    {
-        int16_t CurrentDec = (int16_t)(Current * 1000.0);
-        snprintf(OledText1, 20, "Corrente letta:"); 
-        snprintf(OledText2, 20, "%dmA", CurrentDec); 
-    }
+    // else if(infoRoll == CURRENT)
+    // {
+    //     int16_t CurrentDec = (int16_t)(Current * 1000.0);
+    //     snprintf(OledText1, 20, "Corrente letta:"); 
+    //     snprintf(OledText2, 20, "%dmA", CurrentDec); 
+    // }
     else if(infoRoll == CURRENT_AVG)
     {
         int16_t CurrentDec = (int16_t)(CurrentAvg * 1000.0);
