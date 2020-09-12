@@ -94,21 +94,37 @@ void BUTTON_CTRL::checkButton(uint32_t &Timer, bool &Status, bool &TimerSetting)
                 {
                     lastPressedTime = millis() - lastPressedTime;
                     lastPressedRepete = 0;
-                    if(lastPressedTime <= (500 * MAX_PRESSED_REPETE))
+                    if(lastPressedTime <= (250 * MAX_PRESSED_REPETE))
                     {
-                        if(Timer + 10 < 5999)
-                        {
-                            Timer += 10;
-                        }
-                        else
-                        {
-                            Timer = 5999;
-                        }
+                        timerIncrementModality = !timerIncrementModality;
+                        Timer = 0;
+                        // if(Timer + 10 < 5999)
+                        // {
+                        //     Timer += 10;
+                        // }
+                        // else
+                        // {
+                        //     Timer = 5999;
+                        // }
                     }
                 }
-                if(Timer < 5999)
+                if(timerIncrementModality == TIMER_1)
                 {
-                    Timer++;
+                    if(Timer < 5999)
+                    {
+                        Timer++;
+                    }
+                }
+                else
+                {
+                    if(Timer + 10 < 5999)
+                    {
+                        Timer += 10;
+                    }
+                    else
+                    {
+                        Timer = 5999;
+                    }
                 }
                 Status = ON;
             }
@@ -189,6 +205,11 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
     char OledText1[20], OledText2[20];
     char hour[4], minute[4];
     bool IsTimer = false;
+    if(oldSwitchStatus != Status)
+    {
+        Oled.clear();
+        oldSwitchStatus = Status;
+    }
     if(Status == ON)
     {
         if(oldTimerSetting != TimerSetting)

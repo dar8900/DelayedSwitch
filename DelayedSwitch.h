@@ -12,6 +12,9 @@
 #define ON      true
 #define OFF     false
 
+#define TIMER_1     false
+#define TIMER_10    true
+
 
 #define RELE_PIN            1
 #define BUTTON_PIN          3
@@ -46,6 +49,7 @@ class BUTTON_CTRL
         uint32_t lastPressedTime = 0;
         uint8_t lastPressedRepete = 0;
         const uint8_t MAX_PRESSED_REPETE = 3;
+        bool timerIncrementModality = TIMER_1;
     public:
         void setup();
         void checkButton(uint32_t &Timer, bool &Status, bool &TimerSetting);
@@ -65,6 +69,7 @@ class OLED_CTRL
         SSD1306_Mini Oled;
         uint8_t infoRoll = TIMER;
         bool oldTimerSetting;
+        bool oldSwitchStatus;
         // bool enablePageRool = true;
     public:
         void setup();     
