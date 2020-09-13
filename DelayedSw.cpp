@@ -269,12 +269,12 @@ void OLED_CTRL::showAllInfo(uint32_t Timer, bool Status, float Current, float Cu
     //     snprintf(OledText1, 20, "Corrente letta:"); 
     //     snprintf(OledText2, 20, "%dmA", CurrentDec); 
     // }
-    else if(infoRoll == CURRENT_AVG)
-    {
-        int16_t CurrentDec = (int16_t)(CurrentAvg * 1000.0);
-        snprintf(OledText1, 20, "Corrente media:");
-        snprintf(OledText2, 20, "%dmA", CurrentDec);
-    }
+    // else if(infoRoll == CURRENT_AVG)
+    // {
+    //     int16_t CurrentDec = (int16_t)(CurrentAvg * 1000.0);
+    //     snprintf(OledText1, 20, "Corrente media:");
+    //     snprintf(OledText2, 20, "%dmA", CurrentDec);
+    // }
     Oled.cursorTo(strlen(OledText1), 3);
     Oled.printString(OledText1);
     if(!IsTimer)

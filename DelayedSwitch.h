@@ -63,7 +63,7 @@ class OLED_CTRL
             TIMER = 0,
             STATUS,
             // CURRENT,
-            CURRENT_AVG,
+            // CURRENT_AVG,
             MAX_ROLL
         };
         SSD1306_Mini Oled;
