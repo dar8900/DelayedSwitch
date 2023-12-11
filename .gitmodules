@@ -1,0 +1,12 @@
+[submodule "lib/Tiny4kOLED"]
+	path = lib/Tiny4kOLED
+	url = https://github.com/datacute/Tiny4kOLED.git
+[submodule "lib/TimerLib"]
+	path = lib/TimerLib
+	url = git@github.com:dar8900/TimerLib.git
+[submodule "lib/ReleLib"]
+	path = lib/ReleLib
+	url = git@github.com:dar8900/ReleLib.git
+[submodule "lib/ButtonLib"]
+	path = lib/ButtonLib
+	url = git@github.com:dar8900/ButtonLib.git
